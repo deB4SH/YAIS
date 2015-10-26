@@ -28,7 +28,7 @@ public class WebAPI extends WebSocketServer{
 
     @Override
     public void onMessage(WebSocket webSocket, String message) {
-        System.out.println(message);
+        System.out.println("[NEW MESSAGE]: " + message);
     }
 
     @Override
