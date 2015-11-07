@@ -13,7 +13,11 @@ Wekan-Board:
 Database-Structur Planning
 =============
 Collection planning
-- 1x collection for all archive entries
-- 1x collection for all boards in the archive
-- 1x rooms that holds the boards
-    
+- 1x collection for all archive entries  
+    id, shelf-row-id, shelf-id, room-id, name, createdDate, deadline(boolean), deadlineDate(nullable)
+- 1x shelf-row  
+    id, shelf-id, name
+- 1x collection for all shelfs in the archive  
+    id, room id
+- 1x rooms that holds the boards  
+    id, name

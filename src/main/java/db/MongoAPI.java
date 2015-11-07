@@ -26,6 +26,8 @@ public class MongoAPI {
     }
 
     private void createBase(){
+        this.createCollection("yais.folder");
+        this.createCollection("yais.shelf");
 
     }
 
