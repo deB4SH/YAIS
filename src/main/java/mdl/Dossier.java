@@ -4,6 +4,8 @@ import java.util.Date;
 
 public class Dossier {
 
+    public static String mongoDBident = "yais.dossier";
+
     //references
     private int id;
 

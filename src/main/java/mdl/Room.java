@@ -2,6 +2,8 @@ package mdl;
 
 public class Room {
 
+    public static String mongoDBident = "yais.room";
+
     private int id;
     private String location;
 

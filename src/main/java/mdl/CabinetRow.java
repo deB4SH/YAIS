@@ -2,6 +2,8 @@ package mdl;
 
 public class CabinetRow {
 
+    public static String mongoDBident = "yais.cabinetrow";
+
     //reference values
     private int id;
     private char idLetter;
