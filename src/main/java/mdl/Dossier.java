@@ -1,8 +1,12 @@
 package mdl;
 
+import com.mongodb.client.MongoCollection;
+import iface.Storable;
+import org.bson.Document;
+
 import java.util.Date;
 
-public class Dossier {
+public class Dossier implements Storable{
 
     public static String mongoDBident = "yais.dossier";
 
@@ -15,4 +19,19 @@ public class Dossier {
     private Date lastUse;
     private Date createdOn;
 
+
+    public Dossier(String name, String archiveObject, Date lastUse){
+
+    }
+
+
+    public void store(MongoCollection collection) {
+        Document document = new Document("id", this.id)
+                .append("name", this.name)
+                .append("archiveObject", this.archiveObject)
+                .append("lastUse", this.lastUse)
+                .append("createdOn", this.createdOn);
+
+        collection.insertOne(document);
+    }
 }

@@ -1,6 +1,10 @@
 package mdl;
 
-public class CabinetRow {
+import com.mongodb.client.MongoCollection;
+import iface.Storable;
+import org.bson.Document;
+
+public class CabinetRow implements Storable {
 
     public static String mongoDBident = "yais.cabinetrow";
 
@@ -25,6 +29,13 @@ public class CabinetRow {
         this.placeInRow = placeInRow;
     }
 
+    public void store(MongoCollection collection) {
+        Document document = new Document("id", this.id)
+                .append("idLetter", this.idLetter)
+                .append("cabinetID", this.cabinetID)
+                .append("placeInRow", this.placeInRow);
 
+        collection.insertOne(document);
+    }
 
 }

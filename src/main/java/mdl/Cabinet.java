@@ -1,9 +1,13 @@
 package mdl;
 
+import com.mongodb.client.MongoCollection;
+import iface.Storable;
+import org.bson.Document;
+
 /**
  * Basemodel for the cabinet
  */
-public class Cabinet {
+public class Cabinet implements Storable{
 
     public static String mongoDBident = "yais.cabinet";
 
@@ -23,6 +27,13 @@ public class Cabinet {
         //TODO: create base object
     }
 
+    public void store(MongoCollection collection) {
+        Document document = new Document("id", this.id)
+                .append("idLetter", this.idLetter)
+                .append("roomID", this.roomID)
+                .append("rowCount", this.rowCount);
 
+        collection.insertOne(document);
+    }
 
 }
