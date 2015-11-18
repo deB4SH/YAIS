@@ -1,29 +1,45 @@
-package mdl;
+package de.b4sh.yais.mdl;
 
-import misc.LogType;
-import misc.LogWriter;
+import static com.mongodb.client.model.Filters.*;
+import com.mongodb.client.MongoDatabase;
+import de.b4sh.yais.misc.LogType;
+import de.b4sh.yais.misc.LogWriter;
+import org.bson.Document;
 
 import java.util.ArrayList;
 
 public class InstanceHandler {
 
-    ArrayList<Room> roomList;
-    ArrayList<Cabinet> cabinetList;
-    ArrayList<CabinetRow> cabinetRowList;
-    ArrayList<Dossier> dossierList;
+    private MongoDatabase db;
 
-    public InstanceHandler(){
+    private ArrayList<Room> roomList;
+    private ArrayList<Cabinet> cabinetList;
+    private ArrayList<CabinetRow> cabinetRowList;
+    private ArrayList<Dossier> dossierList;
+
+    public InstanceHandler(MongoDatabase db){
         this.roomList = new ArrayList<Room>();
         this.cabinetList = new ArrayList<Cabinet>();
         this.cabinetRowList = new ArrayList<CabinetRow>();
         this.dossierList = new ArrayList<Dossier>();
+        this.db = db;
     }
 
     public void addRoom(Room r) {
         if(!this.roomList.contains(r)){
-            //TODO: check if entity is in mongodb
+            //check if entity is in mongodb
+            Document searchDoc = null;
+            searchDoc = db.getCollection(Room.mongoDBident).find(eq("id",r.getID())).first();
             //TODO: if yes add to list from mongodb
+            if(searchDoc != null){
+                //check if difference between objects
+
+            }
             //TODO: if not add to list and to mongodb
+            else{
+
+            }
+
             this.roomList.add(r);
         }
         else{
@@ -66,4 +82,6 @@ public class InstanceHandler {
             LogWriter.logToConsole(LogType.error,"Dossier already exists in list");
         }
     }
+
+
 }

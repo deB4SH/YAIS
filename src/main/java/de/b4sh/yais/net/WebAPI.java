@@ -1,4 +1,4 @@
-package net;
+package de.b4sh.yais.net;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;

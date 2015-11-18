@@ -1,18 +1,14 @@
-package db;
+package de.b4sh.yais.db;
 
 import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.MongoIterable;
-import com.sun.org.apache.bcel.internal.util.ClassPath;
-import mdl.Cabinet;
-import mdl.CabinetRow;
-import mdl.Dossier;
-import mdl.Room;
+import de.b4sh.yais.mdl.Cabinet;
+import de.b4sh.yais.mdl.CabinetRow;
+import de.b4sh.yais.mdl.Dossier;
+import de.b4sh.yais.mdl.Room;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class MongoAPI {
 
@@ -35,6 +31,10 @@ public class MongoAPI {
         this.createBaseCollection(baseCollection);
 
         getAllCollectionName();
+    }
+
+    public MongoDatabase getDB(){
+        return this.db;
     }
 
     /**

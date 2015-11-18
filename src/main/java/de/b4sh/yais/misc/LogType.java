@@ -1,4 +1,4 @@
-package misc;
+package de.b4sh.yais.misc;
 
 public enum LogType {
 

@@ -1,4 +1,4 @@
-package net;
+package de.b4sh.yais.net;
 
 public enum MessageType {
 

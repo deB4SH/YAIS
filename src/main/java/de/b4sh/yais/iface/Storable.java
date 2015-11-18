@@ -1,4 +1,4 @@
-package iface;
+package de.b4sh.yais.iface;
 
 import com.mongodb.client.MongoCollection;
 

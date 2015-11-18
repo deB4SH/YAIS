@@ -1,7 +1,7 @@
-package mdl;
+package de.b4sh.yais.mdl;
 
 import com.mongodb.client.MongoCollection;
-import iface.Storable;
+import de.b4sh.yais.iface.Storable;
 import org.bson.Document;
 
 public class Room implements Storable{
@@ -22,6 +22,10 @@ public class Room implements Storable{
                                     .append("location", location);
 
         collection.insertOne(document);
+    }
+
+    public int getID(){
+        return this.id;
     }
 }
 

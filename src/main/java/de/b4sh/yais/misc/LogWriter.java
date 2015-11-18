@@ -1,4 +1,4 @@
-package misc;
+package de.b4sh.yais.misc;
 
 import java.util.ArrayList;
 
