@@ -19,7 +19,14 @@ public class InstanceHandler {
 
     public InstanceHandler(MongoDatabase db){
         this.roomList = new ArrayList<Room>();
+        for(Document current: db.getCollection(Room.mongoDBident).find()){
+            this.roomList.add(Room.restore(current));
+        }
+
         this.cabinetList = new ArrayList<Cabinet>();
+
+
+
         this.cabinetRowList = new ArrayList<CabinetRow>();
         this.dossierList = new ArrayList<Dossier>();
         this.db = db;
@@ -82,6 +89,5 @@ public class InstanceHandler {
             LogWriter.logToConsole(LogType.error,"Dossier already exists in list");
         }
     }
-
 
 }

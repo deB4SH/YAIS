@@ -19,12 +19,11 @@ public class Cabinet implements Storable{
     //cabinet values
     private int rowCount;
 
-    public Cabinet(int rowCount, int roomID){
-        //TODO: generate id
-
-        //TODO: generate idLetter
-
-        //TODO: create base object
+    public Cabinet(int id, char idLetter, int rowCount, int roomID){
+        this.id = id;
+        this.idLetter = idLetter;
+        this.rowCount = rowCount;
+        this.roomID = roomID;
     }
 
     public void store(MongoCollection collection) {
@@ -34,6 +33,16 @@ public class Cabinet implements Storable{
                 .append("rowCount", this.rowCount);
 
         collection.insertOne(document);
+    }
+
+    public static Cabinet restore(Document document){
+
+        int id = Integer.parseInt(document.get("id").toString());
+        char idLetter = document.get("idLetter").toString().charAt(0);
+        int roomID = Integer.parseInt(document.get("roomID").toString());
+        int rowCount = Integer.parseInt(document.get("rowCount").toString());
+
+        return new Cabinet(id,idLetter,rowCount,roomID);
     }
 
 }

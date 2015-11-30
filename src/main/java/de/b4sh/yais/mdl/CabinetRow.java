@@ -17,14 +17,10 @@ public class CabinetRow implements Storable {
     private int placeInRow;
 
 
-    public CabinetRow(int cabinetID, int placeInRow){
+    public CabinetRow(int id, char idLetter, int cabinetID, int placeInRow){
 
-        //TODO: create id;
-
-        //TODO: create idLetter
-
-        //TODO: create base object
-
+        this.id = id;
+        this.idLetter = idLetter;
         this.cabinetID = cabinetID;
         this.placeInRow = placeInRow;
     }
@@ -36,6 +32,15 @@ public class CabinetRow implements Storable {
                 .append("placeInRow", this.placeInRow);
 
         collection.insertOne(document);
+    }
+
+    public static CabinetRow restore(Document document){
+        int id = Integer.parseInt(document.get("id").toString());
+        char idLetter = document.get("idLetter").toString().charAt(0);
+        int cabinetID = Integer.parseInt(document.get("cabinetID").toString());
+        int placeInRow = Integer.parseInt(document.get("placeInRow").toString());
+
+        return new CabinetRow(id,idLetter,cabinetID,placeInRow);
     }
 
 }
