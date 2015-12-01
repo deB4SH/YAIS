@@ -72,6 +72,7 @@ public class InstanceHandler {
         //add if not in the instanceList , add it to and store all values in mongodb
         if(!inList){
             this.cabinetList.add(c);
+            c.store(this.db.getCollection(Cabinet.mongoDBident));
         }
         else{
             LogWriter.logToConsole(LogType.error,"Cabinet already exists in list");
@@ -88,6 +89,7 @@ public class InstanceHandler {
         //add if not in the instanceList , add it to and store all values in mongodb
         if(!inList){
             this.cabinetRowList.add(cr);
+            cr.store(this.db.getCollection(CabinetRow.mongoDBident));
         }
         else{
             LogWriter.logToConsole(LogType.error,"CabinetRow already exists in list");
@@ -104,6 +106,7 @@ public class InstanceHandler {
         //add if not in the instanceList , add it to and store all values in mongodb
         if(!inList){
             this.dossierList.add(d);
+            d.store(this.db.getCollection(Dossier.mongoDBident));
         }
         else{
             LogWriter.logToConsole(LogType.error,"Dossier already exists in list");
