@@ -1,6 +1,5 @@
 package de.b4sh.yais.mdl;
 
-import static com.mongodb.client.model.Filters.*;
 import com.mongodb.client.MongoDatabase;
 import de.b4sh.yais.misc.LogType;
 import de.b4sh.yais.misc.LogWriter;
@@ -17,37 +16,46 @@ public class InstanceHandler {
     private ArrayList<CabinetRow> cabinetRowList;
     private ArrayList<Dossier> dossierList;
 
-    public InstanceHandler(MongoDatabase db){
+    public InstanceHandler(MongoDatabase db) {
+        this.db = db;
+
         this.roomList = new ArrayList<Room>();
-        for(Document current: db.getCollection(Room.mongoDBident).find()){
+        for (Document current : db.getCollection(Room.mongoDBident).find()) {
             this.roomList.add(Room.restore(current));
         }
+        LogWriter.logToConsole(LogType.debug, "Roomlist loaded from MongoDB");
 
         this.cabinetList = new ArrayList<Cabinet>();
-
-
+        for (Document current : db.getCollection(Cabinet.mongoDBident).find()) {
+            this.cabinetList.add(Cabinet.restore(current));
+        }
+        LogWriter.logToConsole(LogType.debug, "Cabinetlist loaded from MongoDB");
 
         this.cabinetRowList = new ArrayList<CabinetRow>();
+        for (Document current : db.getCollection(CabinetRow.mongoDBident).find()) {
+            this.cabinetRowList.add(CabinetRow.restore(current));
+        }
+        LogWriter.logToConsole(LogType.debug, "CabinetRowlist loaded from MongoDB");
+
         this.dossierList = new ArrayList<Dossier>();
-        this.db = db;
+        for (Document current : db.getCollection(Dossier.mongoDBident).find()) {
+            this.dossierList.add(Dossier.restore(current));
+        }
+        LogWriter.logToConsole(LogType.debug, "Dossierlist loaded from MongoDB");
     }
 
     public void addRoom(Room r) {
-        if(!this.roomList.contains(r)){
-            //check if entity is in mongodb
-            Document searchDoc = null;
-            searchDoc = db.getCollection(Room.mongoDBident).find(eq("id",r.getID())).first();
-            //TODO: if yes add to list from mongodb
-            if(searchDoc != null){
-                //check if difference between objects
-
+        boolean inList = false;
+        for(Room e: this.roomList){
+            if(r.getLocation() == e.getLocation())
+            {
+                inList = true;
             }
-            //TODO: if not add to list and to mongodb
-            else{
-
-            }
-
+        }
+        //add if not in the instanceList , add it to and store all values in mongodb
+        if(!inList){
             this.roomList.add(r);
+            r.store(this.db.getCollection(Room.mongoDBident));
         }
         else{
             LogWriter.logToConsole(LogType.error,"Room already exists in list");
@@ -55,10 +63,14 @@ public class InstanceHandler {
     }
 
     public void addCabinet(Cabinet c){
-        if(!this.cabinetList.contains(c)){
-            //TODO: check if entity is in mongodb
-            //TODO: if yes add to list from mongodb
-            //TODO: if not add to list and to mongodb
+        boolean inList = false;
+        for(Cabinet e: this.cabinetList){
+            if(c.getIdLetter() == e.getIdLetter() && c.getRoomID() == e.getRoomID() && c.getRowCount() == e.getRowCount()){
+                inList = true;
+            }
+        }
+        //add if not in the instanceList , add it to and store all values in mongodb
+        if(!inList){
             this.cabinetList.add(c);
         }
         else{
@@ -67,10 +79,14 @@ public class InstanceHandler {
     }
 
     public void addCabinetRow(CabinetRow cr){
-        if(!this.cabinetRowList.contains(cr)){
-            //TODO: check if entity is in mongodb
-            //TODO: if yes add to list from mongodb
-            //TODO: if not add to list and to mongodb
+        boolean inList = false;
+        for(CabinetRow  e: this.cabinetRowList){
+            if(e.getIdLetter() == cr.getIdLetter() && e.getCabinetID() == cr.getCabinetID() && e.getPlaceInRow() == e.getPlaceInRow()){
+                inList = true;
+            }
+        }
+        //add if not in the instanceList , add it to and store all values in mongodb
+        if(!inList){
             this.cabinetRowList.add(cr);
         }
         else{
@@ -79,10 +95,14 @@ public class InstanceHandler {
     }
 
     public void addDossier(Dossier d){
-        if(!this.dossierList.contains(d)){
-            //TODO: check if entity is in mongodb
-            //TODO: if yes add to list from mongodb
-            //TODO: if not add to list and to mongodb
+        boolean inList = false;
+        for(Dossier e: this.dossierList){
+            if(e.getCreatedOn() == d.getCreatedOn() && e.getArchiveObject() == d.getArchiveObject() && e.getLastUse() == d.getLastUse() && e.getName() == d.getName()){
+                inList = true;
+            }
+        }
+        //add if not in the instanceList , add it to and store all values in mongodb
+        if(!inList){
             this.dossierList.add(d);
         }
         else{

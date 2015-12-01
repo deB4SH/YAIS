@@ -75,4 +75,24 @@ public class Dossier implements Storable{
 
         return new Dossier(id,name,archiveObject,lastUse,createdOn);
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getArchiveObject() {
+        return archiveObject;
+    }
+
+    public String getLastUse() {
+        return lastUse;
+    }
+
+    public String getCreatedOn() {
+        return createdOn;
+    }
 }

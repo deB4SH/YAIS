@@ -33,5 +33,12 @@ public class Room implements Storable{
         return this.id;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public String getLocation() {
+        return location;
+    }
 }
 

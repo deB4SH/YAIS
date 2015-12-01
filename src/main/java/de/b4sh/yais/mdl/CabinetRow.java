@@ -43,4 +43,19 @@ public class CabinetRow implements Storable {
         return new CabinetRow(id,idLetter,cabinetID,placeInRow);
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public char getIdLetter() {
+        return idLetter;
+    }
+
+    public int getCabinetID() {
+        return cabinetID;
+    }
+
+    public int getPlaceInRow() {
+        return placeInRow;
+    }
 }
