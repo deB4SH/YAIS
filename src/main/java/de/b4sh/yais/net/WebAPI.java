@@ -1,5 +1,9 @@
 package de.b4sh.yais.net;
 
+import com.mongodb.util.JSON;
+import de.b4sh.yais.YAIS;
+import de.b4sh.yais.misc.LogType;
+import de.b4sh.yais.misc.LogWriter;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -10,9 +14,11 @@ import java.net.UnknownHostException;
 public class WebAPI extends WebSocketServer{
 
     private int port;
-    public WebAPI(int port) throws UnknownHostException{
+    private MessageInterpreter mI;
+    public WebAPI(int port, MessageInterpreter mI) throws UnknownHostException{
         super( new InetSocketAddress(port) );
         this.port = port;
+        this.mI = mI;
     }
 
     @Override
@@ -28,7 +34,16 @@ public class WebAPI extends WebSocketServer{
 
     @Override
     public void onMessage(WebSocket webSocket, String message) {
-        System.out.println("[NEW MESSAGE]: " + message);
+
+        Object jsonFile = JSON.parse(message);
+
+        int b = 0;
+        LogWriter.logToConsole(LogType.debug,"test");
+        mI.renderIncommingMessage(jsonFile);
+
+        if(YAIS.DEBUG){
+            LogWriter.logToConsole(LogType.debug, message);
+        }
     }
 
     @Override

@@ -2,16 +2,14 @@ package de.b4sh.yais.net;
 
 public enum MessageType {
 
-    // SIGN IN
-    WELCOME("01-0001"),
+    //USERMANAGEMENT
+    USER("01"),
 
-    //USER AUTH
-    REQUSERDATA("02-0001"),
-    REQUSER("02-0002"),
-    REQPW("02-0003"),
+    //DATAMANAGEMENT
+    DATA("02"),
 
-    //DB REQUEST
-    REQABCASDLKJASDLAS("03-0001");
+    //PLACEHOLDER
+    REQABCASDLKJASDLAS("03");
 
 
     private String value;
