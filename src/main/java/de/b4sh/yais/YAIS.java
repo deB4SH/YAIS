@@ -2,6 +2,7 @@ package de.b4sh.yais;
 
 import de.b4sh.yais.db.MongoAPI;
 import de.b4sh.yais.mdl.InstanceHandler;
+import de.b4sh.yais.misc.LogType;
 import de.b4sh.yais.misc.LogWriter;
 import de.b4sh.yais.net.MessageInterpreter;
 import de.b4sh.yais.net.WebAPI;
@@ -29,7 +30,7 @@ public class YAIS {
             messageInterpreter = new MessageInterpreter(instanceHandler);
             webAPI = new WebAPI(60000, messageInterpreter);
             webAPI.start();
-            System.out.println("ChatServer started on port: " + webAPI.getPort());
+            LogWriter.logToConsole(LogType.system,"Websocket started on port: " + webAPI.getPort());
         }
         catch (UnknownHostException uhe){
             uhe.printStackTrace();

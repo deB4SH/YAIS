@@ -23,8 +23,9 @@ public class WebAPI extends WebSocketServer{
 
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
-        System.out.println("NEW CONNECTION");
-        System.out.println(clientHandshake.getResourceDescriptor());
+        if(YAIS.DEBUG){
+            LogWriter.logToConsole(LogType.debug, "WS: new connection | descriptor: " + clientHandshake.getResourceDescriptor());
+        }
     }
 
     @Override

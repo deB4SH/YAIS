@@ -5,6 +5,7 @@ public enum MessageSubType {
     //USERMANAGEMENT
     USERLOGON("01"),
     USERLOGOFF("02"),
+    USERREGISTER("03"),
 
     //DATAMANAGEMENT
     DATAROOM("01"),
