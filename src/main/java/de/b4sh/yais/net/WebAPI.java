@@ -30,7 +30,9 @@ public class WebAPI extends WebSocketServer{
 
     @Override
     public void onClose(WebSocket webSocket, int i, String s, boolean b) {
-        System.out.println("client left the room");
+        if(YAIS.DEBUG){
+            LogWriter.logToConsole(LogType.debug, "WS: client closed the connection: " + s);
+        }
     }
 
     @Override

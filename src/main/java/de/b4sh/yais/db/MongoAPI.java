@@ -3,10 +3,7 @@ package de.b4sh.yais.db;
 import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import de.b4sh.yais.mdl.Cabinet;
-import de.b4sh.yais.mdl.CabinetRow;
-import de.b4sh.yais.mdl.Dossier;
-import de.b4sh.yais.mdl.Room;
+import de.b4sh.yais.mdl.*;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -28,6 +25,7 @@ public class MongoAPI {
         this.baseCollection.add(Cabinet.mongoDBident);
         this.baseCollection.add(CabinetRow.mongoDBident);
         this.baseCollection.add(Dossier.mongoDBident);
+        this.baseCollection.add(User.mongoDBident);
 
         this.createBaseCollection(baseCollection);
 

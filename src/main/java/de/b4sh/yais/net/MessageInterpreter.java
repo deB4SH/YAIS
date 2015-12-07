@@ -40,6 +40,8 @@ public class MessageInterpreter {
                 if(YAIS.DEBUG){
                     LogWriter.logToConsole(LogType.debug, "user registration");
                 }
+                BasicDBObject content = (BasicDBObject)message.get("message");
+
 
 
             }
