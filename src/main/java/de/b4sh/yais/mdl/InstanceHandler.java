@@ -1,6 +1,7 @@
 package de.b4sh.yais.mdl;
 
 import com.mongodb.client.MongoDatabase;
+import de.b4sh.yais.YAIS;
 import de.b4sh.yais.misc.LogType;
 import de.b4sh.yais.misc.LogWriter;
 import org.bson.Document;
@@ -15,10 +16,16 @@ public class InstanceHandler {
     private ArrayList<Cabinet> cabinetList;
     private ArrayList<CabinetRow> cabinetRowList;
     private ArrayList<Dossier> dossierList;
+    private ArrayList<User> userList;
 
     public InstanceHandler(MongoDatabase db) {
         this.db = db;
 
+        this.userList = new ArrayList<User>();
+        for(Document current: db.getCollection(User.mongoDBident).find()){
+            this.userList.add(User.restore(current));
+        }
+        LogWriter.logToConsole(LogType.debug, "Userlist loaded from MongoDB");
         this.roomList = new ArrayList<Room>();
         for (Document current : db.getCollection(Room.mongoDBident).find()) {
             this.roomList.add(Room.restore(current));
@@ -111,6 +118,35 @@ public class InstanceHandler {
         else{
             LogWriter.logToConsole(LogType.error,"Dossier already exists in list");
         }
+    }
+
+    public void addUser(User u){
+        boolean inList = false;
+        for(User dbU: this.userList){
+            if(u.getUsername().equalsIgnoreCase(dbU.getUsername())){
+                inList = true;
+            }
+        }
+        if(!inList){
+            if(YAIS.DEBUG){
+                LogWriter.logToConsole(LogType.debug, "User registration complete with id: " + u.getId() + " and name: " + u.getUsername());
+            }
+            this.userList.add(u);
+            u.store(this.db.getCollection(User.mongoDBident));
+        }
+        else{
+            LogWriter.logToConsole(LogType.error, "User already exists in Database");
+        }
+    }
+
+    public int getNextUserId(){
+        int idHigh = 0;
+        for(User u: this.userList){
+            if(u.getId() >= idHigh){
+                idHigh = u.getId() + 1;
+            }
+        }
+        return idHigh;
     }
 
 }

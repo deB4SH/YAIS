@@ -5,6 +5,7 @@ import com.mongodb.util.JSON;
 import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 import de.b4sh.yais.YAIS;
 import de.b4sh.yais.mdl.InstanceHandler;
+import de.b4sh.yais.mdl.User;
 import de.b4sh.yais.misc.LogType;
 import de.b4sh.yais.misc.LogWriter;
 
@@ -36,14 +37,13 @@ public class MessageInterpreter {
             }
             //USER REGISTER
             else if(messageSubType.equalsIgnoreCase(MessageSubType.USERREGISTER.getValue())) {
-                //TODO: user register
                 if(YAIS.DEBUG){
                     LogWriter.logToConsole(LogType.debug, "user registration");
                 }
-                BasicDBObject content = (BasicDBObject)message.get("message");
-
-
-
+                BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
+                //create from messageContent
+                User newUser = new User(this.instanceHandler.getNextUserId(),messageContent.get("username").toString(), messageContent.get("password").toString());
+                this.instanceHandler.addUser(newUser);
             }
             //SOMETHING WENT WRONG HERE
             else{
