@@ -11,11 +11,13 @@ public class User implements Storable{
     private int id;
     private String username;
     private String password;
+    private boolean userLoggedOn; //value just for the server
 
     public User(int id, String username, String password){
         this.id = id;
         this.username = username;
         this.password = password;
+        this.userLoggedOn = false;
     }
 
     public void store(MongoCollection collection) {
@@ -43,5 +45,13 @@ public class User implements Storable{
 
     public String getPassword() {
         return password;
+    }
+
+    public boolean isUserLoggedOn() {
+        return userLoggedOn;
+    }
+
+    public void setUserLoggedOn(boolean userLoggedOn) {
+        this.userLoggedOn = userLoggedOn;
     }
 }
