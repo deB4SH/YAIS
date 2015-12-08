@@ -139,6 +139,15 @@ public class InstanceHandler {
         }
     }
 
+    public User getUser(String username){
+        for(User u: this.userList){
+            if(u.getUsername().equalsIgnoreCase(username)){
+                return u;
+            }
+        }
+        return null;
+    }
+
     public int getNextUserId(){
         int idHigh = 0;
         for(User u: this.userList){

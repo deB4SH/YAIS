@@ -8,6 +8,7 @@ import de.b4sh.yais.mdl.InstanceHandler;
 import de.b4sh.yais.mdl.User;
 import de.b4sh.yais.misc.LogType;
 import de.b4sh.yais.misc.LogWriter;
+import org.java_websocket.WebSocket;
 
 public class MessageInterpreter {
 
@@ -17,7 +18,7 @@ public class MessageInterpreter {
         this.instanceHandler = instanceHandler;
     }
 
-    public void renderIncommingMessage(Object json){
+    public void renderIncommingMessage(Object json, WebSocket ws){
         BasicDBObject message = (BasicDBObject)json;
         String messageType = (String)message.get("messageType");
         String messageSubType = (String)message.get("messageSubType");
@@ -44,6 +45,7 @@ public class MessageInterpreter {
                 //create from messageContent
                 User newUser = new User(this.instanceHandler.getNextUserId(),messageContent.get("username").toString(), messageContent.get("password").toString());
                 this.instanceHandler.addUser(newUser);
+                ws.send("Register complete");
             }
             //SOMETHING WENT WRONG HERE
             else{

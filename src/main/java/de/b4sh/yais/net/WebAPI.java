@@ -42,7 +42,7 @@ public class WebAPI extends WebSocketServer{
 
         int b = 0;
         LogWriter.logToConsole(LogType.debug,"test");
-        mI.renderIncommingMessage(jsonFile);
+        mI.renderIncommingMessage(jsonFile, webSocket);
 
         if(YAIS.DEBUG){
             LogWriter.logToConsole(LogType.debug, message);
