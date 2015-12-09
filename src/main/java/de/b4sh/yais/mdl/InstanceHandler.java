@@ -1,9 +1,11 @@
 package de.b4sh.yais.mdl;
 
 import com.mongodb.client.MongoDatabase;
+import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 import de.b4sh.yais.YAIS;
 import de.b4sh.yais.misc.LogType;
 import de.b4sh.yais.misc.LogWriter;
+import de.b4sh.yais.net.MessagePacker;
 import org.bson.Document;
 import org.java_websocket.WebSocket;
 
@@ -80,7 +82,7 @@ public class InstanceHandler {
      * @param r
      * @param ws
      */
-    public void addRoom(Room r, WebSocket ws) {
+    public void addRoom(Room r, WebSocket ws, String messageID) {
         boolean inList = false;
         for(Room e: this.roomList){
             if(r.getLocation() == e.getLocation())
@@ -92,11 +94,11 @@ public class InstanceHandler {
         if(!inList){
             this.roomList.add(r);
             r.store(this.db.getCollection(Room.mongoDBident));
-            ws.send("Room added to List");
+            ws.send(MessagePacker.createCompleteMessage(messageID,"Room added to list"));
         }
         else{
             LogWriter.logToConsole(LogType.error,"Room already exists in list");
-            ws.send("Room already in List, sry");
+            ws.send(MessagePacker.createErrorMessage(messageID,"Room already exists in list"));
         }
     }
 
@@ -151,6 +153,35 @@ public class InstanceHandler {
         }
     }
 
+    /**
+     * Creates user and sends error/complete message to client
+     * @param u
+     */
+    public void addUser(User u,WebSocket ws,String messageID){
+        boolean inList = false;
+        for(User dbU: this.userList){
+            if(u.getUsername().equalsIgnoreCase(dbU.getUsername())){
+                inList = true;
+            }
+        }
+        if(!inList){
+            if(YAIS.DEBUG){
+                LogWriter.logToConsole(LogType.debug, "User registration complete with id: " + u.getId() + " and name: " + u.getUsername());
+            }
+            this.userList.add(u);
+            u.store(this.db.getCollection(User.mongoDBident));
+            ws.send(MessagePacker.createCompleteMessage(messageID,"User registration complete with id: " + u.getId() + " and name: " + u.getUsername()));
+        }
+        else{
+            LogWriter.logToConsole(LogType.error, "User already exists in Database");
+            ws.send(MessagePacker.createErrorMessage(messageID,"User already exists in Database"));
+        }
+    }
+
+    /**
+     * Creates a user
+     * @param u
+     */
     public void addUser(User u){
         boolean inList = false;
         for(User dbU: this.userList){

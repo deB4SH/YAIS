@@ -17,6 +17,30 @@ import java.util.List;
 
 public class MessagePacker {
 
+    public static String createCompleteMessage(String messageID, String reason){
+        if(YAIS.DEBUG){
+            LogWriter.logToConsole(LogType.debug, "Messagepacker: ERROR MESSAGE");
+        }
+
+        JSONObject response = new JSONObject();
+        response.put("messageID", messageID);
+        response.put("done",reason);
+
+        return response.toString();
+    }
+
+    public static String createErrorMessage(String messageID,String reason){
+        if(YAIS.DEBUG){
+            LogWriter.logToConsole(LogType.debug, "Messagepacker: ERROR MESSAGE");
+        }
+
+        JSONObject response = new JSONObject();
+        response.put("messageID", messageID);
+        response.put("error",reason);
+
+        return response.toString();
+    }
+
     public static String createAllRoomMessage(MongoDatabase db){
         if(YAIS.DEBUG){
             LogWriter.logToConsole(LogType.debug, "Messagepacker creates packages for all rooms");

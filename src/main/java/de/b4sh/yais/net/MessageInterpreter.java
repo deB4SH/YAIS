@@ -70,8 +70,8 @@ public class MessageInterpreter {
                 BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
                 //create from messageContent
                 User newUser = new User(this.instanceHandler.getNextUserId(),messageContent.get("username").toString(), messageContent.get("password").toString());
-                this.instanceHandler.addUser(newUser);
-                ws.send("Register complete");
+                this.instanceHandler.addUser(newUser,ws,message.get("messageID").toString());
+
             }
             //SOMETHING WENT WRONG HERE
             else{
@@ -95,7 +95,7 @@ public class MessageInterpreter {
                     String location = newObj.get("location").toString();
                     Room r = new Room(id,location);
 
-                    this.instanceHandler.addRoom(r,ws);
+                    this.instanceHandler.addRoom(r,ws,message.get("messageID").toString());
                 }
                 //get all objects and send via ws
                 if(message.get("messageActionType").toString().equalsIgnoreCase("load")){
