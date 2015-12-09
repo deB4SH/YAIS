@@ -5,6 +5,7 @@ import de.b4sh.yais.YAIS;
 import de.b4sh.yais.misc.LogType;
 import de.b4sh.yais.misc.LogWriter;
 import org.bson.Document;
+import org.java_websocket.WebSocket;
 
 import java.util.ArrayList;
 
@@ -51,6 +52,10 @@ public class InstanceHandler {
         LogWriter.logToConsole(LogType.debug, "Dossierlist loaded from MongoDB");
     }
 
+    /**
+     * Adds room to list an checks if some room with the same name is already in the list
+     * @param r
+     */
     public void addRoom(Room r) {
         boolean inList = false;
         for(Room e: this.roomList){
@@ -66,6 +71,32 @@ public class InstanceHandler {
         }
         else{
             LogWriter.logToConsole(LogType.error,"Room already exists in list");
+        }
+    }
+
+    /**
+     * Adds room to list and checks if some room with the same name is already in the list
+     * also sends a fail or complete message to ws
+     * @param r
+     * @param ws
+     */
+    public void addRoom(Room r, WebSocket ws) {
+        boolean inList = false;
+        for(Room e: this.roomList){
+            if(r.getLocation() == e.getLocation())
+            {
+                inList = true;
+            }
+        }
+        //add if not in the instanceList , add it to and store all values in mongodb
+        if(!inList){
+            this.roomList.add(r);
+            r.store(this.db.getCollection(Room.mongoDBident));
+            ws.send("Room added to List");
+        }
+        else{
+            LogWriter.logToConsole(LogType.error,"Room already exists in list");
+            ws.send("Room already in List, sry");
         }
     }
 
@@ -148,6 +179,24 @@ public class InstanceHandler {
         return null;
     }
 
+    /**
+     * Returns the next roomid in list
+     * @return
+     */
+    public int getNextRoomId(){
+        int idHigh = 0;
+        for(Room u: this.roomList){
+            if(u.getId() >= idHigh){
+                idHigh = u.getId() + 1;
+            }
+        }
+        return idHigh;
+    }
+
+    /**
+     * Returns the next userid in list
+     * @return
+     */
     public int getNextUserId(){
         int idHigh = 0;
         for(User u: this.userList){

@@ -30,8 +30,6 @@ public class MongoAPI {
         this.createBaseCollection(baseCollection);
 
         getAllCollectionName();
-
-        this.createTestData();
     }
 
     public MongoDatabase getDB(){
@@ -115,19 +113,6 @@ public class MongoAPI {
      */
     public void createCollection(String collectionName){
         this.db.createCollection(collectionName);
-    }
-
-
-    private void createTestData(){
-
-        Room testRoom = new Room(0,"Raum 01");
-        Room testRoom2 = new Room(1,"Raum 02");
-        Room testRoom3 = new Room(3,"Raum 03");
-
-        testRoom.store(this.db.getCollection(Room.mongoDBident));
-        testRoom2.store(this.db.getCollection(Room.mongoDBident));
-        testRoom3.store(this.db.getCollection(Room.mongoDBident));
-        //Cabinet cabinet = new Cabinet()
     }
 
 }

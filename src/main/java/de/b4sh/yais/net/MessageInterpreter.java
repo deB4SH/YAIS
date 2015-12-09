@@ -1,21 +1,26 @@
 package de.b4sh.yais.net;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.MongoClient;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.util.JSON;
-import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 import de.b4sh.yais.YAIS;
 import de.b4sh.yais.mdl.InstanceHandler;
+import de.b4sh.yais.mdl.Room;
 import de.b4sh.yais.mdl.User;
 import de.b4sh.yais.misc.LogType;
 import de.b4sh.yais.misc.LogWriter;
 import org.java_websocket.WebSocket;
+import org.json.JSONObject;
 
 public class MessageInterpreter {
 
     private InstanceHandler instanceHandler;
+    private MongoDatabase db;
 
-    public MessageInterpreter(InstanceHandler instanceHandler) {
+    public MessageInterpreter(InstanceHandler instanceHandler, MongoDatabase db) {
         this.instanceHandler = instanceHandler;
+        this.db = db;
     }
 
     public void renderIncommingMessage(Object json, WebSocket ws){
@@ -43,7 +48,7 @@ public class MessageInterpreter {
                 }
                 else{
                     //TODO: send the client something with the username is wrong
-                    ws.send("something with your username is wrong")
+                    ws.send("something with your username is wrong");
                 }
             }
             //USER LOGOFF
@@ -75,23 +80,93 @@ public class MessageInterpreter {
             }
         }
         //DATA RELATED
-        else if(message.get("messageType") == MessageType.DATA.getValue()) {
+        else if(((String) message.get("messageType")).equalsIgnoreCase(MessageType.DATA.getValue())) {
             //DATA ROOM
-            if(message.get("messageSubType") == MessageSubType.DATAROOM.getValue()) {
-                //TODO: data room code
-                LogWriter.logToConsole(LogType.debug,"Request for data of rooms");
+            if(((String) message.get("messageSubType")).equalsIgnoreCase(MessageSubType.DATAROOM.getValue())) {
+                if(YAIS.DEBUG){
+                    LogWriter.logToConsole(LogType.debug, "Datarequest on Room");
+                }
+                //create new object
+                if(message.get("messageActionType").toString().equalsIgnoreCase("new")){
+                    BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
+                    BasicDBObject newObj = (BasicDBObject)JSON.parse(messageContent.get("obj").toString());
+
+                    int id = this.instanceHandler.getNextRoomId();
+                    String location = newObj.get("location").toString();
+                    Room r = new Room(id,location);
+
+                    this.instanceHandler.addRoom(r,ws);
+                }
+                //get all objects and send via ws
+                if(message.get("messageActionType").toString().equalsIgnoreCase("load")){
+                    String request = MessagePacker.createAllRoomMessage(this.db);
+                    JSONObject response = new JSONObject();
+                    response.put("messageID",message.get("messageID"));
+                    response.put("response",request);
+                    ws.send(response.toString());
+                }
+                //remove one/list from database
+                if(message.get("messageActionType").toString().equalsIgnoreCase("remove")){
+                    //TODO: remove code
+                    BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
+                }
             }
             //DATA CABINET
             else if(message.get("messageSubType") == MessageSubType.DATACABINET.getValue()) {
-                //TODO: data cabinet code
+                if(YAIS.DEBUG){
+                    LogWriter.logToConsole(LogType.debug, "Datarequest on Cabinet");
+                }
+                BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
+                //create new object
+                if(messageContent.get("messageActionType").toString().equalsIgnoreCase("new")){
+                    //TODO: new code
+                }
+                //get all objects and send via ws
+                if(messageContent.get("messageActionType").toString().equalsIgnoreCase("load")){
+                    //TODO: load code
+                }
+                //remove one/list from database
+                if(messageContent.get("messageActionType").toString().equalsIgnoreCase("remove")){
+                    //TODO: remove code
+                }
             }
             //DATA CABINETROW
             else if(message.get("messageSubType") == MessageSubType.DATACABINETROW.getValue()) {
-                //TODO: data cabinet code
+                if(YAIS.DEBUG){
+                    LogWriter.logToConsole(LogType.debug, "Datarequest on CabinetRow");
+                }
+                BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
+                //create new object
+                if(messageContent.get("messageActionType").toString().equalsIgnoreCase("new")){
+                    //TODO: new code
+                }
+                //get all objects and send via ws
+                if(messageContent.get("messageActionType").toString().equalsIgnoreCase("load")){
+                    //TODO: load code
+                }
+                //remove one/list from database
+                if(messageContent.get("messageActionType").toString().equalsIgnoreCase("remove")){
+                    //TODO: remove code
+                }
             }
             //DATA DOSSIER
             else if(message.get("messageSubType") == MessageSubType.DATADOSSIER.getValue()) {
-                    //TODO: data dossier code
+                if(YAIS.DEBUG){
+                    LogWriter.logToConsole(LogType.debug, "Datarequest on Dossier");
+                }
+                BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
+                //create new object
+                if(messageContent.get("messageActionType").toString().equalsIgnoreCase("new")){
+                    //TODO: new code
+                }
+                //get all objects and send via ws
+                if(messageContent.get("messageActionType").toString().equalsIgnoreCase("load")){
+                    //TODO: load code
+                }
+                //remove one/list from database
+                if(messageContent.get("messageActionType").toString().equalsIgnoreCase("remove")){
+                    //TODO: remove code
+                }
             }
             else{
                 LogWriter.logToConsole(LogType.error, "Something went wrong here with this request");
