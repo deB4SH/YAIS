@@ -4,7 +4,9 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.util.JSON;
+import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 import de.b4sh.yais.YAIS;
+import de.b4sh.yais.mdl.Cabinet;
 import de.b4sh.yais.mdl.InstanceHandler;
 import de.b4sh.yais.mdl.Room;
 import de.b4sh.yais.mdl.User;
@@ -12,6 +14,8 @@ import de.b4sh.yais.misc.LogType;
 import de.b4sh.yais.misc.LogWriter;
 import org.java_websocket.WebSocket;
 import org.json.JSONObject;
+
+import java.util.UUID;
 
 public class MessageInterpreter {
 
@@ -39,16 +43,17 @@ public class MessageInterpreter {
                 if(u == null){
                     if(u.getPassword() == messageContent.get("password").toString()){
                         u.setUserLoggedOn(true);
-                        //TODO: send some "now you are logged in bla bla"
+                        u.setSessionid(UUID.randomUUID());
+                        ws.send(MessagePacker.createLoginMessage(message.get("messageID").toString(),"User is now logged in",u.getSessionid().toString()));
                     }
                     else{
                         //TODO: send client something with the pw is wrong
-                        ws.send("something with your password is wrong");
+                        ws.send(MessagePacker.createErrorMessage(message.get("messageID").toString(),"The password for User: " + u.getUsername() + " is wrong."));
                     }
                 }
                 else{
                     //TODO: send the client something with the username is wrong
-                    ws.send("something with your username is wrong");
+                    ws.send(MessagePacker.createErrorMessage(message.get("messageID").toString(),"The username: " + u.getUsername() + " is wrong."));
                 }
             }
             //USER LOGOFF
@@ -61,6 +66,7 @@ public class MessageInterpreter {
                     this.instanceHandler.getUser(messageContent.get("username").toString()).setUserLoggedOn(false);
                 }
                 //TODO: send client some logoff message
+                ws.send(MessagePacker.createLogoffMessage(message.get("messageID").toString(),"User: " + messageContent.get("username") + " is now logged off"));
             }
             //USER REGISTER
             else if(messageSubType.equalsIgnoreCase(MessageSubType.USERREGISTER.getValue())) {
@@ -116,17 +122,29 @@ public class MessageInterpreter {
                 if(YAIS.DEBUG){
                     LogWriter.logToConsole(LogType.debug, "Datarequest on Cabinet");
                 }
-                BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
                 //create new object
-                if(messageContent.get("messageActionType").toString().equalsIgnoreCase("new")){
-                    //TODO: new code
+                if(message.get("messageActionType").toString().equalsIgnoreCase("new")){
+                    BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
+                    BasicDBObject newObj = (BasicDBObject)JSON.parse(messageContent.get("obj").toString());
+
+                    int id = this.instanceHandler.getNextCabinetId();
+                    char idLetter = this.instanceHandler.getNextCabinetLetter(id);
+                    int roomid = Integer.parseInt(newObj.get("roomid").toString());
+                    int rowCount = Integer.parseInt(newObj.get("rowCount").toString());
+
+                    Cabinet newCabinet = new Cabinet(id,idLetter,rowCount,roomid);
+                    this.instanceHandler.addCabinet(newCabinet,ws,message.get("messageID").toString());
                 }
                 //get all objects and send via ws
-                if(messageContent.get("messageActionType").toString().equalsIgnoreCase("load")){
-                    //TODO: load code
+                if(message.get("messageActionType").toString().equalsIgnoreCase("load")){
+                    String request = MessagePacker.createAllCabinetMessage(this.db);
+                    JSONObject response = new JSONObject();
+                    response.put("messageID", message.get("messageID"));
+                    response.put("response", request);
+                    ws.send(response.toString());
                 }
                 //remove one/list from database
-                if(messageContent.get("messageActionType").toString().equalsIgnoreCase("remove")){
+                if(message.get("messageActionType").toString().equalsIgnoreCase("remove")){
                     //TODO: remove code
                 }
             }

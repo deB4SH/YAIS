@@ -5,6 +5,7 @@ import com.mongodb.client.MongoDatabase;
 
 import com.mongodb.util.JSON;
 import de.b4sh.yais.YAIS;
+import de.b4sh.yais.mdl.Cabinet;
 import de.b4sh.yais.mdl.Room;
 import de.b4sh.yais.misc.LogType;
 import de.b4sh.yais.misc.LogWriter;
@@ -17,6 +18,12 @@ import java.util.List;
 
 public class MessagePacker {
 
+    /**
+     * Generic complete Message to Client
+     * @param messageID
+     * @param reason
+     * @return
+     */
     public static String createCompleteMessage(String messageID, String reason){
         if(YAIS.DEBUG){
             LogWriter.logToConsole(LogType.debug, "Messagepacker: ERROR MESSAGE");
@@ -29,6 +36,12 @@ public class MessagePacker {
         return response.toString();
     }
 
+    /**
+     * Generic error Message to Client
+     * @param messageID
+     * @param reason
+     * @return
+     */
     public static String createErrorMessage(String messageID,String reason){
         if(YAIS.DEBUG){
             LogWriter.logToConsole(LogType.debug, "Messagepacker: ERROR MESSAGE");
@@ -41,6 +54,37 @@ public class MessagePacker {
         return response.toString();
     }
 
+    public static String createLoginMessage(String messageID, String reason, String sessionID){
+        if(YAIS.DEBUG){
+            LogWriter.logToConsole(LogType.debug, "Messagepacker: Login Message");
+        }
+
+        JSONObject response = new JSONObject();
+        response.put("messageID", messageID);
+        response.put("done",reason);
+        response.put("sessionID", sessionID);
+
+        return response.toString();
+    }
+
+    public static String createLogoffMessage(String messageID, String reason){
+        if(YAIS.DEBUG){
+            LogWriter.logToConsole(LogType.debug, "Messagepacker: Logoff Message");
+        }
+
+        JSONObject response = new JSONObject();
+        response.put("messageID", messageID);
+        response.put("done",reason);
+
+        return response.toString();
+    }
+
+
+    /**
+     * Creates JSON object for transfer via ws
+     * @param db
+     * @return
+     */
     public static String createAllRoomMessage(MongoDatabase db){
         if(YAIS.DEBUG){
             LogWriter.logToConsole(LogType.debug, "Messagepacker creates packages for all rooms");
@@ -59,4 +103,28 @@ public class MessagePacker {
         return response.toString();
     }
 
+    /**
+     * Creates JSON object for transfer via ws
+     * @param db
+     * @return
+     */
+    public static String createAllCabinetMessage(MongoDatabase db) {
+        if(YAIS.DEBUG){
+            LogWriter.logToConsole(LogType.debug, "Messagepacker creates packages for all cabinet");
+        }
+
+        JSONObject response = new JSONObject();
+        int docID = 0;
+        for (Document current : db.getCollection(Cabinet.mongoDBident).find()){
+            JSONObject cR = new JSONObject();
+            cR.put("id",current.get("id"));
+            cR.put("idLetter", current.get("location"));
+            cR.put("roomID",current.get("roomID"));
+            cR.put("rowCount", current.get("rowCount"));
+            response.put(""+docID,cR.toString());
+            docID++;
+        }
+
+        return response.toString();
+    }
 }

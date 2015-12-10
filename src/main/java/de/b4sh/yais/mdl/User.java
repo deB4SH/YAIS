@@ -4,6 +4,8 @@ import com.mongodb.client.MongoCollection;
 import de.b4sh.yais.iface.Storable;
 import org.bson.Document;
 
+import java.util.UUID;
+
 public class User implements Storable{
 
     public static String mongoDBident = "yais.user";
@@ -12,6 +14,7 @@ public class User implements Storable{
     private String username;
     private String password;
     private boolean userLoggedOn; //value just for the server
+    private UUID sessionid;
 
     public User(int id, String username, String password){
         this.id = id;
@@ -53,5 +56,13 @@ public class User implements Storable{
 
     public void setUserLoggedOn(boolean userLoggedOn) {
         this.userLoggedOn = userLoggedOn;
+    }
+
+    public UUID getSessionid() {
+        return sessionid;
+    }
+
+    public void setSessionid(UUID sessionid) {
+        this.sessionid = sessionid;
     }
 }

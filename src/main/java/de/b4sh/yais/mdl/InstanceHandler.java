@@ -81,6 +81,7 @@ public class InstanceHandler {
      * also sends a fail or complete message to ws
      * @param r
      * @param ws
+     * @param messageID
      */
     public void addRoom(Room r, WebSocket ws, String messageID) {
         boolean inList = false;
@@ -102,6 +103,35 @@ public class InstanceHandler {
         }
     }
 
+    /**
+     * Adds Cabinet to Database and sends Client a Response
+     * @param c
+     * @param ws
+     * @param messageID
+     */
+    public void addCabinet(Cabinet c, WebSocket ws, String messageID){
+        boolean inList = false;
+        for(Cabinet e: this.cabinetList){
+            if(c.getIdLetter() == e.getIdLetter() && c.getRoomID() == e.getRoomID() && c.getRowCount() == e.getRowCount()){
+                inList = true;
+            }
+        }
+        //add if not in the instanceList , add it to and store all values in mongodb
+        if(!inList){
+            this.cabinetList.add(c);
+            c.store(this.db.getCollection(Cabinet.mongoDBident));
+            ws.send(MessagePacker.createCompleteMessage(messageID,"Cabinet added to Database"));
+        }
+        else{
+            LogWriter.logToConsole(LogType.error,"Cabinet already exists in list");
+            ws.send(MessagePacker.createErrorMessage(messageID,"Cabinet already exists in list"));
+        }
+    }
+
+    /**
+     * Adds cabinet to Database
+     * @param c
+     */
     public void addCabinet(Cabinet c){
         boolean inList = false;
         for(Cabinet e: this.cabinetList){
@@ -222,6 +252,29 @@ public class InstanceHandler {
             }
         }
         return idHigh;
+    }
+
+    /**
+     * Returns the next cabinetid in list
+     * @return
+     */
+    public int getNextCabinetId(){
+        int idHigh = 0;
+        for(Cabinet u: this.cabinetList){
+            if(u.getId() >= idHigh){
+                idHigh = u.getId() + 1;
+            }
+        }
+        return idHigh;
+    }
+
+    public char getNextCabinetLetter(int id){
+        if(id < 26){
+            return "ABCDEFGHIJKLMNOPQRSTUVWXYZ".substring(id, id+1).charAt(0);
+        }
+        else{
+            return "A".charAt(0);
+        }
     }
 
     /**
