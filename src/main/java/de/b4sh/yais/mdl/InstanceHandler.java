@@ -61,7 +61,7 @@ public class InstanceHandler {
     public void addRoom(Room r) {
         boolean inList = false;
         for(Room e: this.roomList){
-            if(r.getLocation() == e.getLocation())
+            if(r.getLocation().equalsIgnoreCase(e.getLocation()))
             {
                 inList = true;
             }
