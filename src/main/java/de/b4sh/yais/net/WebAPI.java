@@ -24,7 +24,8 @@ public class WebAPI extends WebSocketServer{
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
         if(YAIS.DEBUG){
-            LogWriter.logToConsole(LogType.debug, "WS: new connection | descriptor: " + clientHandshake.getResourceDescriptor());
+            LogWriter.logToConsole(LogType.debug, "WS: new connection | descriptor: "
+                                + clientHandshake.getResourceDescriptor());
         }
     }
 
@@ -37,13 +38,8 @@ public class WebAPI extends WebSocketServer{
 
     @Override
     public void onMessage(WebSocket webSocket, String message) {
-
         Object jsonFile = JSON.parse(message);
-
-        int b = 0;
-        LogWriter.logToConsole(LogType.debug,"test");
         mI.renderIncommingMessage(jsonFile, webSocket);
-
         if(YAIS.DEBUG){
             LogWriter.logToConsole(LogType.debug, message);
         }
@@ -51,6 +47,7 @@ public class WebAPI extends WebSocketServer{
 
     @Override
     public void onError(WebSocket webSocket, Exception e) {
-
+        LogWriter.logToConsole(LogType.error, e.toString());
+        e.printStackTrace();
     }
 }
