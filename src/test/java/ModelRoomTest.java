@@ -19,7 +19,7 @@ public class ModelRoomTest {
     public static boolean internalTestRoom(){
         //check if values are equals
         if(tR.getLocation().equals(location)){
-            if(tR.getId() == 2){
+            if(tR.getId() == id){
                 return true;
             }
             else{
