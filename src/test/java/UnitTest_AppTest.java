@@ -1,13 +1,5 @@
-import junit.framework.Assert;
-import org.junit.Test;
-
+/**
+ * Created by SG on 21.01.2016.
+ */
 public class UnitTest_AppTest {
-
-    @Test
-    public void testAppTestHelloWorld(){
-        Assert.assertEquals(AppTest.getHelloWorld(), "Hello World");
-    }
-
-
-
 }
