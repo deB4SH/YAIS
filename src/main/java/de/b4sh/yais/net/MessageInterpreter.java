@@ -36,30 +36,42 @@ public class MessageInterpreter {
             //USER LOGON
             if(messageSubType.equalsIgnoreCase(MessageSubType.USERLOGON.getValue())) {
                 if(YAIS.DEBUG){
-                    LogWriter.logToConsole(LogType.debug, "socketreq. on user logon data");
+                    LogWriter.logToConsole(LogType.debug, "Client-Request on User Login");
+                    System.out.println(message);
                 }
+                //get user object
                 BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
-                User u = this.instanceHandler.getUser(messageContent.get("username").toString());
-                if(u == null){
-                    if(u.getPassword() == messageContent.get("password").toString()){
-                        u.setUserLoggedOn(true);
-                        u.setSessionid(UUID.randomUUID());
-                        ws.send(MessagePacker.createLoginMessage(message.get("messageID").toString(),"User is now logged in",u.getSessionid().toString()));
+                String userName = messageContent.get("username").toString();
+                String pwHash = messageContent.get("password").toString();
+                User tmpUser = this.instanceHandler.getUser(userName);
+
+                //username and password clear
+                if(tmpUser != null && tmpUser.getPassword().equals(pwHash)){
+                    if(YAIS.DEBUG){
+                        LogWriter.logToConsole(LogType.debug, "User with name: " + userName + " successfully logged in");
                     }
-                    else{
-                        //TODO: send client something with the pw is wrong
-                        ws.send(MessagePacker.createErrorMessage(message.get("messageID").toString(),"The password for User: " + u.getUsername() + " is wrong."));
-                    }
+                    this.instanceHandler.getUser(userName).setSessionid(UUID.randomUUID());
+                    ws.send(MessagePacker.createLoginMessage(message.get("messageID").toString(),"User is now logged in",this.instanceHandler.getUser(userName).getSessionid().toString()));
                 }
+                //user found but password wrong
+                else if(tmpUser != null && tmpUser.getPassword().equals(pwHash) == false){
+                    if(YAIS.DEBUG){
+                        LogWriter.logToConsole(LogType.debug, "User with name: " + userName + " found but password is wrong");
+                    }
+                    ws.send(MessagePacker.createErrorMessage(message.get("messageID").toString(),"The password for User: " + userName + " is wrong."));
+                }
+                //user not found
                 else{
-                    //TODO: send the client something with the username is wrong
-                    ws.send(MessagePacker.createErrorMessage(message.get("messageID").toString(),"The username: " + u.getUsername() + " is wrong."));
+                    if(YAIS.DEBUG){
+                        LogWriter.logToConsole(LogType.debug, "User with name: " + userName + " not found");
+                    }
+                    ws.send(MessagePacker.createErrorMessage(message.get("messageID").toString(),"The username: " + userName + " is not available in the Database."));
                 }
             }
             //USER LOGOFF
             else if(messageSubType.equalsIgnoreCase(MessageSubType.USERLOGOFF.getValue())) {
                 if(YAIS.DEBUG){
-                    LogWriter.logToConsole(LogType.debug, "user logoff");
+                    LogWriter.logToConsole(LogType.debug, "Client-Request User Logoff");
                 }
                 BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
                 if(this.instanceHandler.getUser(messageContent.get("username").toString()).isUserLoggedOn()){

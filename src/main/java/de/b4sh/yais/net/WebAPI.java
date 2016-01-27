@@ -7,7 +7,6 @@ import de.b4sh.yais.misc.LogWriter;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
-
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
@@ -37,13 +36,8 @@ public class WebAPI extends WebSocketServer{
 
     @Override
     public void onMessage(WebSocket webSocket, String message) {
-
         Object jsonFile = JSON.parse(message);
-
-        int b = 0;
-        LogWriter.logToConsole(LogType.debug,"test");
         mI.renderIncommingMessage(jsonFile, webSocket);
-
         if(YAIS.DEBUG){
             LogWriter.logToConsole(LogType.debug, message);
         }
