@@ -91,6 +91,7 @@ public class MessagePacker {
         }
 
         JSONObject response = new JSONObject();
+        response.put("classType","room");
         int docID = 0;
         for (Document current : db.getCollection(Room.mongoDBident).find()){
             JSONObject cR = new JSONObject();
@@ -114,6 +115,7 @@ public class MessagePacker {
         }
 
         JSONObject response = new JSONObject();
+        response.put("classType","cabinet");
         int docID = 0;
         for (Document current : db.getCollection(Cabinet.mongoDBident).find()){
             JSONObject cR = new JSONObject();
