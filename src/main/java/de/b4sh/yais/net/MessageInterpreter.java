@@ -85,9 +85,11 @@ public class MessageInterpreter {
                 if(YAIS.DEBUG){
                     LogWriter.logToConsole(LogType.debug, "user registration");
                 }
+
                 BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
-                //create from messageContent
-                User newUser = new User(this.instanceHandler.getNextUserId(),messageContent.get("username").toString(), messageContent.get("password").toString());
+                String userName = messageContent.get("username").toString();
+                String pwHash = messageContent.get("password").toString();
+                User newUser = new User(this.instanceHandler.getNextUserId(),userName, pwHash);
                 this.instanceHandler.addUser(newUser,ws,message.get("messageID").toString());
 
             }
