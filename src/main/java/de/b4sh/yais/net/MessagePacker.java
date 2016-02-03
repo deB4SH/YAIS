@@ -120,7 +120,7 @@ public class MessagePacker {
         for (Document current : db.getCollection(Cabinet.mongoDBident).find()){
             JSONObject cR = new JSONObject();
             cR.put("id",current.get("id"));
-            cR.put("idLetter", current.get("location"));
+            cR.put("idLetter", current.get("idLetter"));
             cR.put("roomID",current.get("roomID"));
             cR.put("rowCount", current.get("rowCount"));
             response.put(""+docID,cR.toString());

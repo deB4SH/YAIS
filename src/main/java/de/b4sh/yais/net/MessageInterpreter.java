@@ -111,10 +111,9 @@ public class MessageInterpreter {
                 //create new object
                 if(message.get("messageActionType").toString().equalsIgnoreCase("new")){
                     BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
-                    BasicDBObject newObj = (BasicDBObject)JSON.parse(messageContent.get("obj").toString());
 
                     int id = this.instanceHandler.getNextRoomId();
-                    String location = newObj.get("location").toString();
+                    String location = messageContent.get("location").toString();
                     Room r = new Room(id,location);
 
                     this.instanceHandler.addRoom(r,ws,message.get("messageID").toString());
@@ -129,24 +128,25 @@ public class MessageInterpreter {
                 }
                 //remove one/list from database
                 if(message.get("messageActionType").toString().equalsIgnoreCase("remove")){
-                    //TODO: remove code
                     BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
+                    int roomID = Integer.parseInt(messageContent.get("id").toString());
+                    this.instanceHandler.removeRoom(roomID,ws,(String)message.get("messageID"));
+
                 }
             }
             //DATA CABINET
-            else if(message.get("messageSubType") == MessageSubType.DATACABINET.getValue()) {
+            else if(((String) message.get("messageSubType")).equalsIgnoreCase(MessageSubType.DATACABINET.getValue())) {
                 if(YAIS.DEBUG){
                     LogWriter.logToConsole(LogType.debug, "Datarequest on Cabinet");
                 }
                 //create new object
                 if(message.get("messageActionType").toString().equalsIgnoreCase("new")){
                     BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
-                    BasicDBObject newObj = (BasicDBObject)JSON.parse(messageContent.get("obj").toString());
 
                     int id = this.instanceHandler.getNextCabinetId();
-                    char idLetter = this.instanceHandler.getNextCabinetLetter(id);
-                    int roomid = Integer.parseInt(newObj.get("roomid").toString());
-                    int rowCount = Integer.parseInt(newObj.get("rowCount").toString());
+                    char idLetter = messageContent.get("cabinetLetter").toString().charAt(0);
+                    int roomid = Integer.parseInt(messageContent.get("cabinetRoomID").toString());
+                    int rowCount = Integer.parseInt(messageContent.get("cabinetRowCount").toString());
 
                     Cabinet newCabinet = new Cabinet(id,idLetter,rowCount,roomid);
                     this.instanceHandler.addCabinet(newCabinet,ws,message.get("messageID").toString());
@@ -161,7 +161,9 @@ public class MessageInterpreter {
                 }
                 //remove one/list from database
                 if(message.get("messageActionType").toString().equalsIgnoreCase("remove")){
-                    //TODO: remove code
+                    BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
+                    int cabinetID = Integer.parseInt(messageContent.get("id").toString());
+                    this.instanceHandler.removeCabinet(cabinetID,ws,(String)message.get("messageID"));
                 }
             }
             //DATA CABINETROW

@@ -6,6 +6,7 @@ import de.b4sh.yais.YAIS;
 import de.b4sh.yais.misc.LogType;
 import de.b4sh.yais.misc.LogWriter;
 import de.b4sh.yais.net.MessagePacker;
+import org.bson.BSON;
 import org.bson.Document;
 import org.java_websocket.WebSocket;
 
@@ -103,6 +104,24 @@ public class InstanceHandler {
         }
     }
 
+    public void removeRoom(int id, WebSocket ws, String messageID){
+        //find object
+        int inListId = -1;
+        for(int i=0; i < this.roomList.size(); i++){
+            if(this.roomList.get(i).getId() == id){
+                inListId = i;
+            }
+        }
+        if(inListId >= 0){
+            //found object & and now kill it with fire
+            Document idO = new Document().append("id", id);
+            this.db.getCollection(Room.mongoDBident).deleteOne(idO);
+            this.roomList.remove(inListId);
+
+            ws.send(MessagePacker.createCompleteMessage(messageID,"Room removed with id: " + id));
+        }
+    }
+
     /**
      * Adds Cabinet to Database and sends Client a Response
      * @param c
@@ -146,6 +165,24 @@ public class InstanceHandler {
         }
         else{
             LogWriter.logToConsole(LogType.error,"Cabinet already exists in list");
+        }
+    }
+
+    public void removeCabinet(int id, WebSocket ws, String messageID){
+        //find object
+        int inListId = -1;
+        for(int i=0; i < this.cabinetList.size(); i++){
+            if(this.cabinetList.get(i).getId() == id){
+                inListId = i;
+            }
+        }
+        if(inListId >= 0){
+            //found object & and now kill it with fire
+            Document idO = new Document().append("id", id);
+            this.db.getCollection(Cabinet.mongoDBident).deleteOne(idO);
+            this.cabinetList.remove(inListId);
+
+            ws.send(MessagePacker.createCompleteMessage(messageID,"Cabinet removed with id: " + id));
         }
     }
 
