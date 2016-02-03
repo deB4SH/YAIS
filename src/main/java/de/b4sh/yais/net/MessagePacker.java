@@ -6,6 +6,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.util.JSON;
 import de.b4sh.yais.YAIS;
 import de.b4sh.yais.mdl.Cabinet;
+import de.b4sh.yais.mdl.CabinetRow;
 import de.b4sh.yais.mdl.Room;
 import de.b4sh.yais.misc.LogType;
 import de.b4sh.yais.misc.LogWriter;
@@ -123,6 +124,32 @@ public class MessagePacker {
             cR.put("idLetter", current.get("idLetter"));
             cR.put("roomID",current.get("roomID"));
             cR.put("rowCount", current.get("rowCount"));
+            response.put(""+docID,cR.toString());
+            docID++;
+        }
+
+        return response.toString();
+    }
+
+    /**
+     * Creates JSON object for transfer via ws
+     * @param db
+     * @return
+     */
+    public static String createAllCabinetRowMessage(MongoDatabase db) {
+        if(YAIS.DEBUG){
+            LogWriter.logToConsole(LogType.debug, "Messagepacker creates packages for all cabinet");
+        }
+
+        JSONObject response = new JSONObject();
+        response.put("classType","cabinetrow");
+        int docID = 0;
+        for (Document current : db.getCollection(CabinetRow.mongoDBident).find()){
+            JSONObject cR = new JSONObject();
+            cR.put("id",current.get("id"));
+            cR.put("idLetter", current.get("idLetter"));
+            cR.put("cabinetID",current.get("cabinetID"));
+            cR.put("rowCount", current.get("placeInRow"));
             response.put(""+docID,cR.toString());
             docID++;
         }

@@ -148,6 +148,31 @@ public class InstanceHandler {
     }
 
     /**
+     * Adds CabinetRow to Database and sends Client a Response
+     * @param c
+     * @param ws
+     * @param messageID
+     */
+    public void addCabinetRow(CabinetRow c, WebSocket ws, String messageID){
+        boolean inList = false;
+        for(CabinetRow e: this.cabinetRowList){
+            if(c.getIdLetter() == e.getIdLetter() && c.getCabinetID() == e.getCabinetID() && c.getPlaceInRow() == e.getPlaceInRow()){
+                inList = true;
+            }
+        }
+        //add if not in the instanceList , add it to and store all values in mongodb
+        if(!inList){
+            this.cabinetRowList.add(c);
+            c.store(this.db.getCollection(CabinetRow.mongoDBident));
+            ws.send(MessagePacker.createCompleteMessage(messageID,"Cabinetrow added to Database"));
+        }
+        else{
+            LogWriter.logToConsole(LogType.error,"Cabinetrow already exists in list");
+            ws.send(MessagePacker.createErrorMessage(messageID,"Cabinetrow already exists in list"));
+        }
+    }
+
+    /**
      * Adds cabinet to Database
      * @param c
      */
@@ -183,6 +208,24 @@ public class InstanceHandler {
             this.cabinetList.remove(inListId);
 
             ws.send(MessagePacker.createCompleteMessage(messageID,"Cabinet removed with id: " + id));
+        }
+    }
+
+    public void removeCabinetRow(int id, WebSocket ws, String messageID){
+        //find object
+        int inListId = -1;
+        for(int i=0; i < this.cabinetRowList.size(); i++){
+            if(this.cabinetRowList.get(i).getId() == id){
+                inListId = i;
+            }
+        }
+        if(inListId >= 0){
+            //found object & and now kill it with fire
+            Document idO = new Document().append("id", id);
+            this.db.getCollection(CabinetRow.mongoDBident).deleteOne(idO);
+            this.cabinetRowList.remove(inListId);
+
+            ws.send(MessagePacker.createCompleteMessage(messageID,"Cabinetrow removed with id: " + id));
         }
     }
 
@@ -298,6 +341,26 @@ public class InstanceHandler {
     public int getNextCabinetId(){
         int idHigh = 0;
         for(Cabinet u: this.cabinetList){
+            if(u.getId() >= idHigh){
+                idHigh = u.getId() + 1;
+            }
+        }
+        return idHigh;
+    }
+
+    public int getNextCabinetRowId(){
+        int idHigh = 0;
+        for(CabinetRow u: this.cabinetRowList){
+            if(u.getId() >= idHigh){
+                idHigh = u.getId() +1;
+            }
+        }
+        return idHigh;
+    }
+
+    public int getNextDossierId(){
+        int idHigh = 0;
+        for(Dossier u: this.dossierList){
             if(u.getId() >= idHigh){
                 idHigh = u.getId() + 1;
             }

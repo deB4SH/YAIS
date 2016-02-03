@@ -6,10 +6,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.util.JSON;
 import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
 import de.b4sh.yais.YAIS;
-import de.b4sh.yais.mdl.Cabinet;
-import de.b4sh.yais.mdl.InstanceHandler;
-import de.b4sh.yais.mdl.Room;
-import de.b4sh.yais.mdl.User;
+import de.b4sh.yais.mdl.*;
 import de.b4sh.yais.misc.LogType;
 import de.b4sh.yais.misc.LogWriter;
 import jdk.nashorn.internal.parser.JSONParser;
@@ -167,22 +164,36 @@ public class MessageInterpreter {
                 }
             }
             //DATA CABINETROW
-            else if(message.get("messageSubType") == MessageSubType.DATACABINETROW.getValue()) {
+            else if(((String) message.get("messageSubType")).equalsIgnoreCase(MessageSubType.DATACABINETROW.getValue())) {
                 if(YAIS.DEBUG){
                     LogWriter.logToConsole(LogType.debug, "Datarequest on CabinetRow");
                 }
-                BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
+
                 //create new object
-                if(messageContent.get("messageActionType").toString().equalsIgnoreCase("new")){
-                    //TODO: new code
+                if(message.get("messageActionType").toString().equalsIgnoreCase("new")){
+                    BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
+
+                    int id = this.instanceHandler.getNextCabinetRowId();
+                    char idLetter = messageContent.get("cabinetrowLetter").toString().charAt(0);
+                    int roomid = Integer.parseInt(messageContent.get("cabinetrowCabinetID").toString());
+                    int rowCount = Integer.parseInt(messageContent.get("cabinetrowRowCount").toString());
+
+                    CabinetRow newCabinet = new CabinetRow(id,idLetter,rowCount,roomid);
+                    this.instanceHandler.addCabinetRow(newCabinet,ws,message.get("messageID").toString());
                 }
                 //get all objects and send via ws
-                if(messageContent.get("messageActionType").toString().equalsIgnoreCase("load")){
-                    //TODO: load code
+                if(message.get("messageActionType").toString().equalsIgnoreCase("load")){
+                    String request = MessagePacker.createAllCabinetRowMessage(this.db);
+                    JSONObject response = new JSONObject();
+                    response.put("messageID", message.get("messageID"));
+                    response.put("response", request);
+                    ws.send(response.toString());
                 }
                 //remove one/list from database
-                if(messageContent.get("messageActionType").toString().equalsIgnoreCase("remove")){
-                    //TODO: remove code
+                if(message.get("messageActionType").toString().equalsIgnoreCase("remove")){
+                    BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
+                    int cabinetrowID = Integer.parseInt(messageContent.get("id").toString());
+                    this.instanceHandler.removeCabinetRow(cabinetrowID,ws,(String)message.get("messageID"));
                 }
             }
             //DATA DOSSIER
