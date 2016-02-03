@@ -20,7 +20,7 @@ public class Dossier implements Storable{
     private String archiveObject;
     private String lastUse;
     private String createdOn;
-
+    private int cabinetRowID;
 
     /**
      * Creates the dossier object and assumes the dossier is created this day
@@ -48,12 +48,13 @@ public class Dossier implements Storable{
      * @param lastUse
      * @param createdOn
      */
-    public Dossier(int id, String name, String archiveObject, String lastUse, String createdOn){
+    public Dossier(int id, String name, String archiveObject, String lastUse, String createdOn, int cabinetRowID){
         this.id = id;
         this.name = name;
         this.archiveObject = archiveObject;
         this.lastUse = lastUse;
         this.createdOn = createdOn;
+        this.cabinetRowID = cabinetRowID;
     }
 
     public void store(MongoCollection collection) {
@@ -61,7 +62,8 @@ public class Dossier implements Storable{
                 .append("name", this.name)
                 .append("archiveObject", this.archiveObject)
                 .append("lastUse", this.lastUse)
-                .append("createdOn", this.createdOn);
+                .append("createdOn", this.createdOn)
+                .append("cabinetRowID", this.cabinetRowID);
 
         collection.insertOne(document);
     }
@@ -72,8 +74,9 @@ public class Dossier implements Storable{
         String archiveObject = document.get("archiveObject").toString();
         String lastUse = document.get("lastUse").toString();
         String createdOn = document.get("createdOn").toString();
+        int cabinetRowID = Integer.parseInt(document.get("cabinetRowID").toString());
 
-        return new Dossier(id,name,archiveObject,lastUse,createdOn);
+        return new Dossier(id,name,archiveObject,lastUse,createdOn,cabinetRowID);
     }
 
     public int getId() {

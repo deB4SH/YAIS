@@ -264,6 +264,49 @@ public class InstanceHandler {
     }
 
     /**
+     * Adds Dpssier to Database and sends Client a Response
+     * @param c
+     * @param ws
+     * @param messageID
+     */
+    public void addDossier(Dossier c, WebSocket ws, String messageID){
+        boolean inList = false;
+        for(Dossier e: this.dossierList){
+            if(c.getName() == e.getName() && c.getArchiveObject() == e.getArchiveObject() && c.getCreatedOn() == e.getCreatedOn()){
+                inList = true;
+            }
+        }
+        //add if not in the instanceList , add it to and store all values in mongodb
+        if(!inList){
+            this.dossierList.add(c);
+            c.store(this.db.getCollection(Dossier.mongoDBident));
+            ws.send(MessagePacker.createCompleteMessage(messageID,"Dossier added to Database"));
+        }
+        else{
+            LogWriter.logToConsole(LogType.error,"Dossier already exists in list");
+            ws.send(MessagePacker.createErrorMessage(messageID,"Dossier already exists in list"));
+        }
+    }
+
+    public void removeDossier(int id, WebSocket ws, String messageID){
+        //find object
+        int inListId = -1;
+        for(int i=0; i < this.dossierList.size(); i++){
+            if(this.dossierList.get(i).getId() == id){
+                inListId = i;
+            }
+        }
+        if(inListId >= 0){
+            //found object & and now kill it with fire
+            Document idO = new Document().append("id", id);
+            this.db.getCollection(Dossier.mongoDBident).deleteOne(idO);
+            this.dossierList.remove(inListId);
+
+            ws.send(MessagePacker.createCompleteMessage(messageID,"Dossier removed with id: " + id));
+        }
+    }
+
+    /**
      * Creates user and sends error/complete message to client
      * @param u
      */

@@ -197,23 +197,39 @@ public class MessageInterpreter {
                 }
             }
             //DATA DOSSIER
-            else if(message.get("messageSubType") == MessageSubType.DATADOSSIER.getValue()) {
+            else if(((String) message.get("messageSubType")).equalsIgnoreCase(MessageSubType.DATADOSSIER.getValue())) {
                 if(YAIS.DEBUG){
                     LogWriter.logToConsole(LogType.debug, "Datarequest on Dossier");
                 }
-                BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
+
                 //create new object
-                if(messageContent.get("messageActionType").toString().equalsIgnoreCase("new")){
-                    //TODO: new code
+                if(message.get("messageActionType").toString().equalsIgnoreCase("new")){
+                    BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
+
+                    int id = this.instanceHandler.getNextDossierId();
+                    String name = messageContent.get("dossierName").toString();
+                    String archiveObject = messageContent.get("dossierArchiveObject").toString();
+                    String created = messageContent.get("dossierCreatedOn").toString();
+                    int cabinetID = Integer.parseInt(messageContent.get("dossierCabinetRowID").toString());
+
+                    Dossier newDossier = new Dossier(id,name,archiveObject," ",created,cabinetID);
+                    this.instanceHandler.addDossier(newDossier,ws,message.get("messageID").toString());
                 }
                 //get all objects and send via ws
-                if(messageContent.get("messageActionType").toString().equalsIgnoreCase("load")){
-                    //TODO: load code
+                if(message.get("messageActionType").toString().equalsIgnoreCase("load")){
+                    String request = MessagePacker.createAllDossierMessage(this.db);
+                    JSONObject response = new JSONObject();
+                    response.put("messageID", message.get("messageID"));
+                    response.put("response", request);
+                    ws.send(response.toString());
                 }
                 //remove one/list from database
-                if(messageContent.get("messageActionType").toString().equalsIgnoreCase("remove")){
-                    //TODO: remove code
+                if(message.get("messageActionType").toString().equalsIgnoreCase("remove")){
+                    BasicDBObject messageContent = (BasicDBObject)JSON.parse(message.get("message").toString());
+                    int dossierID = Integer.parseInt(messageContent.get("id").toString());
+                    this.instanceHandler.removeDossier(dossierID,ws,(String)message.get("messageID"));
                 }
+
             }
             else{
                 LogWriter.logToConsole(LogType.error, "Something went wrong here with this request");
