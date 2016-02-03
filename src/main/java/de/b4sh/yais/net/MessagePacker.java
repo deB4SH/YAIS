@@ -26,7 +26,7 @@ public class MessagePacker {
      */
     public static String createCompleteMessage(String messageID, String reason){
         if(YAIS.DEBUG){
-            LogWriter.logToConsole(LogType.debug, "Messagepacker: ERROR MESSAGE");
+            LogWriter.logToConsole(LogType.debug, "Messagepacker: COMPLETE MESSAGE");
         }
 
         JSONObject response = new JSONObject();
